@@ -1,27 +1,8 @@
-## project
-variable "project_id" {
-  description = "The GCP project ID."
-}
-
 variable "region" {
-  description = "The GCP region."
+  description = "AWS region"
   default     = "us-central1"
 }
 
-variable "zone" {
-  description = "The GCP zone."
-  default     = "us-central1-a"
-}
-
-## service account
-variable "service_account_id" {
-  description = "service account id for instance."
-}
-variable "service_account_name" {
-  description = "service account name for instance."
-}
-
-## instance
 variable "instance_name" {
   description = "The GCE instance name."
 }

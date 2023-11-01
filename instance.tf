@@ -34,7 +34,7 @@ resource "google_compute_instance" "default" {
 
   metadata_startup_script = <<EOF
 #!/bin/bash
-curl https://raw.githubusercontent.com/motojouya/develop-gcp/main/gce/resources/init.sh | bash -s -- ${var.instance_user} ${var.ssh_port} ${var.device} ${var.rdp_port}
+curl https://raw.githubusercontent.com/motojouya/develop-ec2/main/resources/init.sh | bash -s -- ${var.instance_user} ${var.ssh_port} ${var.device} ${var.rdp_port}
 EOF
 
   scheduling {
@@ -43,3 +43,10 @@ EOF
     automatic_restart   = false
   }
 }
+
+resource "aws_instance" "hello-world" {
+    ami = "ami-0218d08a1f9dac831"
+    instance_type = "t2.micro"
+    subnet_id = "subnet-00dcd4caf121aac0a"
+}
+
