@@ -1,11 +1,10 @@
 #!/bin/bash
 set -x
 
-# definitions
 region=$1
 userid=$2
 username=$3
-password=$4
+# password=$4
 ssh_port=$5
 volume_id=$6
 
@@ -23,8 +22,8 @@ yum install -y xauth
 yum install -y silversearcher-ag
 
 # mount ebs volume
-aws ec2 attach-volume --volume-id vol-$volume_id --instance-id $instance_id --device /dev/xvdb --region $region
-aws ec2 wait volume-in-use --volume-ids vol-$volume_id
+# aws ec2 attach-volume --volume-id vol-$volume_id --instance-id $instance_id --device /dev/xvdb --region $region
+# aws ec2 wait volume-in-use --volume-ids vol-$volume_id
 device=$(nvme list | grep $volume_id | awk '{print $1}' | xargs)
 while [ -z $device ]; do
     sleep 1
@@ -38,14 +37,15 @@ mkdir /home/$username
 mount $device /home/$username
 
 # add user
-useradd -u $userid -d /home/$username -s /bin/bash $username
-gpasswd -a $username sudo
+sudo adduser newuser
+# useradd -u $userid -d /home/$username -s /bin/bash $username
+# gpasswd -a $username sudo
 cp -arpf /home/ec2-user/.ssh/authorized_keys /home/$username/.ssh/authorized_keys
 chown $username /home/$username
 chgrp $username /home/$username
 chown -R $username /home/$username/.ssh
 chgrp -R $username /home/$username/.ssh
-echo "$username:$password" | chpasswd
+# echo "$username:$password" | chpasswd
 
 # ssh config
 curl https://raw.githubusercontent.com/motojouya/develop-ec2/main/resources/sshd_config.tmpl -O
