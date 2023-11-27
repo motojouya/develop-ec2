@@ -20,6 +20,60 @@ resource "aws_instance" "hello-world" {
     }
 }
 
+# Spot Fleet Request
+resource "aws_spot_fleet_request" "ml-spot-request" {
+  iam_fleet_role = "${aws_iam_role.spot-fleet-role.arn}"
+
+  # spot_price      = "0.1290" # Max Price デフォルトはOn-demand Price
+  target_capacity                     = "${var.spot_target_capacity}"
+  terminate_instances_with_expiration = true
+  wait_for_fulfillment                = "true" # fulfillするまでTerraformが待つ
+
+  launch_specification {
+    ami                         = "${var.spot_instance_ami}"
+    instance_type               = "${var.spot_instance_type}"
+    key_name                    = "${aws_key_pair.ml-key.key_name}"
+    vpc_security_group_ids      = ["${aws_security_group.ml-web-sg.id}"]
+    subnet_id                   = "${element(aws_subnet.ml-subnet-public.*.id, 0)}"
+    associate_public_ip_address = true
+
+    root_block_device {
+      volume_size = "${var.gp2_volume_size}"
+      volume_type = "gp2"
+    }
+
+    tags {
+      Name = "ml-instance"
+    }
+  }
+
+  launch_specification {
+    ami                         = "${var.spot_instance_ami}"
+    instance_type               = "${var.spot_instance_type}"
+    key_name                    = "${aws_key_pair.ml-key.key_name}"
+    vpc_security_group_ids      = ["${aws_security_group.ml-web-sg.id}"]
+    subnet_id                   = "${element(aws_subnet.ml-subnet-public.*.id, 1)}"
+    associate_public_ip_address = true
+
+    root_block_device {
+      volume_size = "${var.gp2_volume_size}"
+      volume_type = "gp2"
+    }
+
+    tags {
+      Name = "ml-instance"
+    }
+  }
+}
+
+data "aws_instance" "ml-instance" {
+  filter {
+    name   = "tag:Name"
+    values = ["ml-instance"]
+  }
+
+  depends_on = ["aws_spot_fleet_request.ml-spot-request"]
+}
 
 const getSpotFleetRequestConfig = (region, userId, userName, sshPort, volumeId) => {
 
@@ -69,53 +123,3 @@ const getSpotFleetRequestConfig = (region, userId, userName, sshPort, volumeId) 
     "Type": "request"
   };
 };
-
-
-
-
-# os loginはdefaultでtrueっぽい
-# 本来はinstanceのmetadataに指定する
-resource "google_compute_instance" "default" {
-  name         = var.instance_name
-  machine_type = var.machine_type
-  zone         = var.zone
-
-  tags = var.tags
-
-  boot_disk {
-    initialize_params {
-      image = var.image
-    }
-  }
-
-  attached_disk {
-    source      = "projects/${var.project_id}/zones/${var.zone}/disks/${var.disk_name}"
-    device_name = var.disk_name
-  }
-
-  metadata = {
-    enable-oslogin : "TRUE"
-  }
-
-  network_interface {
-    network = "default"
-    access_config {}
-  }
-
-  service_account {
-    email  = google_service_account.developer.email
-    scopes = ["cloud-platform"]
-  }
-
-  metadata_startup_script = <<EOF
-#!/bin/bash
-curl https://raw.githubusercontent.com/motojouya/develop-ec2/main/resources/init.sh | bash -s -- ${var.instance_user} ${var.ssh_port} ${var.device} ${var.rdp_port}
-EOF
-
-  scheduling {
-    preemptible         = true
-    on_host_maintenance = "TERMINATE"
-    automatic_restart   = false
-  }
-}
-
