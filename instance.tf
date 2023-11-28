@@ -20,48 +20,46 @@ resource "aws_instance" "hello-world" {
     }
 }
 
-# Spot Fleet Request
-resource "aws_spot_fleet_request" "ml-spot-request" {
-  iam_fleet_role = "${aws_iam_role.spot-fleet-role.arn}"
-
-  # spot_price      = "0.1290" # Max Price デフォルトはOn-demand Price
-  target_capacity                     = "${var.spot_target_capacity}"
-  terminate_instances_with_expiration = true
-  wait_for_fulfillment                = "true" # fulfillするまでTerraformが待つ
-
-  launch_specification {
-    ami                         = "${var.spot_instance_ami}"
-    instance_type               = "${var.spot_instance_type}"
-    key_name                    = "${aws_key_pair.ml-key.key_name}"
-    vpc_security_group_ids      = ["${aws_security_group.ml-web-sg.id}"]
-    subnet_id                   = "${element(aws_subnet.ml-subnet-public.*.id, 0)}"
-    associate_public_ip_address = true
-
-    root_block_device {
-      volume_size = "${var.gp2_volume_size}"
-      volume_type = "gp2"
-    }
-
-    tags {
-      Name = "ml-instance"
+resource "aws_ec2_fleet" "example" {
+  launch_template_config {
+    launch_template_specification {
+      launch_template_id = aws_launch_template.example.id
+      version            = aws_launch_template.example.latest_version
     }
   }
 
+  target_capacity_specification {
+    default_target_capacity_type = "spot"
+    total_target_capacity        = 5
+  }
+}
+
+resource "aws_spot_fleet_request" "spot-fleet-request" {
+  iam_fleet_role = "${aws_iam_role.spot-fleet-role.arn}"
+
+  # spot_price      = "0.1290" # Max Price デフォルトはOn-demand Price
+  target_capacity                     = "${var.spot_target_capacity}" # 1
+  terminate_instances_with_expiration = true
+  wait_for_fulfillment                = "true" # fulfillするまでTerraformが待つ
+  allocation_strategy                 =  "lowestPrice"
+
   launch_specification {
     ami                         = "${var.spot_instance_ami}"
     instance_type               = "${var.spot_instance_type}"
     key_name                    = "${aws_key_pair.ml-key.key_name}"
     vpc_security_group_ids      = ["${aws_security_group.ml-web-sg.id}"]
-    subnet_id                   = "${element(aws_subnet.ml-subnet-public.*.id, 1)}"
+    subnet_id                   = "${var.vpc_subnet_id}"
     associate_public_ip_address = true
 
     root_block_device {
-      volume_size = "${var.gp2_volume_size}"
-      volume_type = "gp2"
+      volume_size           = "${var.gp2_volume_size}" # 8
+      volume_type           = "gp2"
+      delete_on_termination = true
+      device_name           = "/dev/sda1"
     }
 
     tags {
-      Name = "ml-instance"
+      Name = "develop"
     }
   }
 }
