@@ -20,7 +20,106 @@ resource "aws_instance" "hello-world" {
     }
 }
 
-resource "aws_ec2_fleet" "example" {
+resource "aws_launch_template" "foo" {
+  name = "foo"
+
+  block_device_mappings {
+    device_name = "/dev/sdf"
+
+    ebs {
+      volume_size = 20
+    }
+  }
+
+  capacity_reservation_specification {
+    capacity_reservation_preference = "open"
+  }
+
+  cpu_options {
+    core_count       = 4
+    threads_per_core = 2
+  }
+
+  credit_specification {
+    cpu_credits = "standard"
+  }
+
+  disable_api_stop        = true
+  disable_api_termination = true
+
+  ebs_optimized = true
+
+  elastic_gpu_specifications {
+    type = "test"
+  }
+
+  elastic_inference_accelerator {
+    type = "eia1.medium"
+  }
+
+  iam_instance_profile {
+    name = "test"
+  }
+
+  image_id = "ami-test"
+
+  instance_initiated_shutdown_behavior = "terminate"
+
+  instance_market_options {
+    market_type = "spot"
+  }
+
+  instance_type = "t2.micro"
+
+  kernel_id = "test"
+
+  key_name = "test"
+
+  license_specification {
+    license_configuration_arn = "arn:aws:license-manager:eu-west-1:123456789012:license-configuration:lic-0123456789abcdef0123456789abcdef"
+  }
+
+  metadata_options {
+    http_endpoint               = "enabled"
+    http_tokens                 = "required"
+    http_put_response_hop_limit = 1
+    instance_metadata_tags      = "enabled"
+  }
+
+  monitoring {
+    enabled = true
+  }
+
+  network_interfaces {
+    associate_public_ip_address = true
+  }
+
+  placement {
+    availability_zone = "us-west-2a"
+  }
+
+  ram_disk_id = "test"
+
+  vpc_security_group_ids = ["sg-12345678"]
+
+  tag_specifications {
+    resource_type = "instance"
+
+    tags = {
+      Name = "test"
+    }
+  }
+
+  user_data = filebase64("${path.module}/example.sh")
+}
+
+resource "aws_ec2_fleet" "spot_fleet_develop" {
+  type = "request"
+
+  terminate_instances                 = true
+  terminate_instances_with_expiration = true
+  excess_capacity_termination_policy  = "termination"
+
   launch_template_config {
     launch_template_specification {
       launch_template_id = aws_launch_template.example.id
@@ -28,21 +127,22 @@ resource "aws_ec2_fleet" "example" {
     }
   }
 
+  tags {
+    Name = "develop"
+  }
+
   target_capacity_specification {
     default_target_capacity_type = "spot"
-    total_target_capacity        = 5
+    total_target_capacity        = 1
+  }
+
+  spot_options {
+    max_total_price = "0.1290"
   }
 }
 
 resource "aws_spot_fleet_request" "spot-fleet-request" {
   iam_fleet_role = "${aws_iam_role.spot-fleet-role.arn}"
-
-  # spot_price      = "0.1290" # Max Price デフォルトはOn-demand Price
-  target_capacity                     = "${var.spot_target_capacity}" # 1
-  terminate_instances_with_expiration = true
-  wait_for_fulfillment                = "true" # fulfillするまでTerraformが待つ
-  allocation_strategy                 =  "lowestPrice"
-
   launch_specification {
     ami                         = "${var.spot_instance_ami}"
     instance_type               = "${var.spot_instance_type}"
@@ -62,15 +162,6 @@ resource "aws_spot_fleet_request" "spot-fleet-request" {
       Name = "develop"
     }
   }
-}
-
-data "aws_instance" "ml-instance" {
-  filter {
-    name   = "tag:Name"
-    values = ["ml-instance"]
-  }
-
-  depends_on = ["aws_spot_fleet_request.ml-spot-request"]
 }
 
 const getSpotFleetRequestConfig = (region, userId, userName, sshPort, volumeId) => {
