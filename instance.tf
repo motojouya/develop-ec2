@@ -1,17 +1,41 @@
 
-resource "aws_instance" "hello-world" {
-    ami                           = "${AMI}"
+data "aws_ami" "develop_ami" {
+  owners           = ["amazon"]
+  executable_users = ["self"]
+  most_recent      = true
+  filter {
+    name   = "architecture"
+    values = ["arm64"]
+  }
+  filter {
+    name   = "name"
+    values = ["al2023-ami-2023*"]
+  }
+}
+
+resource "aws_instance" "develop" {
+    ami                           = data.aws_ami.develop_ami.id
     instance_type                 = "${instance_type}"
+
     availability_zone             = "${region}"
     subnet_id                     = "${subnet_id}"
+    associate_public_ip_address   = true
+
     key_name                      = "${keypair_name}"
-    associate_public_ip_address   = "true"
     iam_instance_profile          = "${profile_name}"
-    vpc_security_group_ids        = "${security_group}"
+    security_groups               = ["${security_group_name}"]
+    vpc_security_group_ids        = ["${security_group_id}"]
+
     user_data                     = <<EOF
       #!/bin/bash
       curl https://raw.githubusercontent.com/motojouya/develop-ec2/resources/master/init.sh | bash -s -- ${var.region} ${var.userId} ${var.userName} ${var.sshPort} ${var.volumeId}
     EOF
+
+    instance_market_options {
+      spot_options {
+        max_price = 0.0031
+      }
+    }
     # TODO EBS
     # TODO spot fleet
 
@@ -19,6 +43,10 @@ resource "aws_instance" "hello-world" {
         Name = "develop"
     }
 }
+
+# TODO 
+# aws_ebs_volume
+# aws_volume_attachment
 
 resource "aws_launch_template" "foo" {
   name = "foo"
