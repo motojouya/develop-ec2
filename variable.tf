@@ -1,43 +1,26 @@
-variable "region" {
-  description = "AWS region"
-  default     = "us-central1"
-}
+# vpc
+variable "region" {}
+variable "subnet_id" {}
+variable "ssh_port" {}
+variable "security_group_name" {}
+# variable "security_group_id" {}
 
-variable "instance_name" {
-  description = "The GCE instance name."
-}
+# instance
+variable "ami_name_prefix" {} # al2023-ami-2023
+variable "instance_type" {} # TODO
 
-variable "machine_type" {
-  description = "The GCE machine type."
-  default     = "e2-small"
-}
+# profiles
+variable "user_id" {}
+variable "user_name" {}
+variable "keypair_name" {}
+variable "profile_name" {}
 
-variable "image" {
-  description = "The GCE instance boot disk image."
-  default     = "debian-cloud/debian-10"
-}
+# storage
+variable "device_name" {} # TODO /dev/sda1
+variable "volume_id" {}
 
-variable "tags" {
-  type        = list(string)
-  description = "The GCE instance tags. refered by security module."
-}
-
-variable "rdp_port" {
-  description = "The GCE instance rdp port."
-}
-
-variable "ssh_port" {
-  description = "The GCE instance ssh port."
-}
-
-variable "instance_user" {
-  description = "The GCE instance user."
-}
-
-variable "device" {
-  description = "attached disk device name."
-}
-
-variable "disk_name" {
-  description = "attached disk name."
-}
+# others
+variable "max_price" {} # 0.01
+# variable "tags" {
+#   type        = list(string)
+# }
