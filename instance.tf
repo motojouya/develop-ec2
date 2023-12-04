@@ -43,7 +43,7 @@ resource "aws_instance" "develop" {
 
     user_data = <<EOF
       #!/bin/bash
-      curl https://raw.githubusercontent.com/motojouya/develop-ec2/resources/master/init.sh | bash -s -- ${var.region} ${var.user_id} ${var.user_name} ${var.ssh_port} ${var.volume_id}
+      curl https://raw.githubusercontent.com/motojouya/develop-ec2/resources/master/init.sh | bash -s -- ${var.region} ${var.ssh_port} ${var.volume_id} ${var.user_name}
     EOF
 
     tags {
