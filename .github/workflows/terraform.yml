@@ -16,29 +16,20 @@ env:
   TF_BUCKET_KEY              : ${{ vars.bucket_key }}
 
   TF_VAR_region              : ${{ vars.region }}
-  TF_VAR_ami_name_prefix     : ${{ vars.ami_name_prefix }} # al2023-ami-2023
+  TF_VAR_ami_name_prefix     : ${{ vars.ami_name_prefix }}
   TF_VAR_instance_type       : ${{ vars.instance_type }}
-  TF_VAR_device_name         : ${{ vars.device_name }} # /dev/sda1
-  TF_VAR_max_price           : ${{ vars.max_price }} # 0.01
+  TF_VAR_device_name         : ${{ vars.device_name }}
+  TF_VAR_max_price           : ${{ vars.max_price }}
 
-  TF_VAR_subnet_id           : ${{ secrets.subnet_id }}
+  TF_VAR_subnet_id           : ${{ secrets.subnet_id }} # TODO
   TF_VAR_ssh_port            : ${{ secrets.ssh_port }}
   TF_VAR_security_group_name : ${{ secrets.security_group_name }}
-  TF_VAR_volume_id           : ${{ secrets.volume_id }}
-  TF_VAR_keypair_name        : ${{ secrets.keypair_name }}
+  TF_VAR_volume_id           : ${{ secrets.volume_id }} # TODO test creating ec2 instance and format ebs volume
+  TF_VAR_keypair_name        : ${{ secrets.keypair_name }} # TODO
   TF_VAR_profile_name        : ${{ secrets.profile_name }}
   TF_VAR_user_name           : ${{ secrets.user_name }}
   #  TF_VAR_user_id             : ${{ secrets.user_id }}
   #  TF_VAR_password            : ${{ secrets.password }}
-
-  # TODO
-  # - create S3 for terraform backend
-  # - create EC2 IAM role
-  # - create security group or use existing one
-  # - create ebs volume
-  # - test creating ec2 instance and format ebs volume
-  # - create key pair
-  # - create github OIDC IAM role
 
 jobs:
   create_gce:
@@ -51,8 +42,8 @@ jobs:
       - uses: actions/checkout@v3
       - uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-region: ${{ vars.AWS_REGION }} # 'ap-northeast-1'
-          role-to-assume: ${{ vars.AWS_IAM_ROLE }} # 'arn:aws:iam::<AWSアカウントID>:role/<IAMロール名>'
+          aws-region: ${{ env.TF_VAR_region }}
+          role-to-assume: ${{ vars.AWS_IAM_ROLE }} # TODO 'arn:aws:iam::<AWSアカウントID>:role/<IAMロール名>'
 
       - uses: hashicorp/setup-terraform@v2
       - run: terraform fmt -check -recursive
