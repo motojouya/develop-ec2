@@ -4,9 +4,10 @@ set -x
 region=$1
 ssh_port=$2
 volume_id=$3
-username=$4
-# userid=$5
-# password=$6
+device_name=$4
+username=$5
+# userid=$6
+# password=$7
 
 export AWS_DEFAULT_REGION=$region
 cd /home/ec2-user
@@ -14,28 +15,27 @@ instance_id=$(curl -s 169.254.169.254/latest/meta-data/instance-id)
 
 # install commands
 yum update -y
-yum install -y nvme-cli
+# yum install -y nvme-cli
 yum install -y jq
 yum install -y tmux
 yum install -y tree
 yum install -y xauth
 yum install -y silversearcher-ag
 
-# TODO 最初はフォーマットするのでしない
-# # mount ebs volume
-# # aws ec2 attach-volume --volume-id vol-$volume_id --instance-id $instance_id --device /dev/xvdb --region $region
-# # aws ec2 wait volume-in-use --volume-ids vol-$volume_id
+# mount ebs volume
+# aws ec2 attach-volume --volume-id vol-$volume_id --instance-id $instance_id --device /dev/xvdb --region $region
+# aws ec2 wait volume-in-use --volume-ids vol-$volume_id
 # device=$(nvme list | grep $volume_id | awk '{print $1}' | xargs)
 # while [ -z $device ]; do
 #     sleep 1
 #     device=$(nvme list | grep $volume_id | awk '{print $1}' | xargs)
 # done
-# # until [ -e $device ]; do
-# #     sleep 1
-# # done
-# mkdir /home/$username
-# # mkfs -t ext4 $device
-# mount $device /home/$username
+# until [ -e $device ]; do
+#     sleep 1
+# done
+mkdir /home/$username
+# mkfs -t xfs $device
+mount $device_name /home/$username
 
 # add user
 adduser $username
