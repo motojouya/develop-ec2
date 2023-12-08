@@ -46,7 +46,7 @@ resource "aws_instance" "develop" {
       curl https://raw.githubusercontent.com/motojouya/develop-ec2/resources/master/init.sh | bash -s -- ${var.region} ${var.ssh_port} ${var.volume_id} ${var.device_name} ${var.user_name}
     EOF
 
-    tags {
+    tags = {
         Name = "develop"
     }
 }
