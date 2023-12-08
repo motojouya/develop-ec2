@@ -64,7 +64,7 @@ npm install -g typescript typescript-language-server
 amazon-linux-extras install docker
 service docker start
 systemctl enable docker
-usermod -a -G docker ec2-user
+# usermod -a -G docker ec2-user
 usermod -a -G docker $username
 docker info
 # gpasswd -a $username docker

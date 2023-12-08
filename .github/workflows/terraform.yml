@@ -43,7 +43,7 @@ jobs:
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: ${{ env.TF_VAR_region }}
-          role-to-assume: ${{ vars.AWS_IAM_ROLE }} # TODO 'arn:aws:iam::<AWSアカウントID>:role/<IAMロール名>'
+          role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
 
       - uses: hashicorp/setup-terraform@v2
       - run: terraform fmt -check -recursive
