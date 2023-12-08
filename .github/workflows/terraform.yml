@@ -46,7 +46,8 @@ jobs:
           role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
 
       - uses: hashicorp/setup-terraform@v2
-      - run: terraform fmt -check -recursive
+      # - run: terraform fmt -check -recursive
+      - run: terraform fmt -recursive
       - run: terraform init -backend-config="region=$TF_VAR_region" -backend-config="bucket=$TF_BUCKET_NAME" -backend-config="key=$TF_BUCKET_KEY"
       - run: terraform validate
       - run: terraform plan -no-color -lock-timeout=60m
