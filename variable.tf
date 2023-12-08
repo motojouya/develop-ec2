@@ -14,7 +14,7 @@ variable "max_price" {}
 # }
 
 # profiles
-variable "user_id" {}
+# variable "user_id" {}
 variable "user_name" {}
 variable "keypair_name" {}
 variable "profile_name" {}
