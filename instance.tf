@@ -1,28 +1,29 @@
-data "aws_ami" "develop_ami" {
-  owners           = ["amazon"]
-  executable_users = ["self"]
-  most_recent      = true
-
-  filter {
-    name   = "architecture"
-    values = ["x86_64"] # , "arm64"
-  }
-  filter {
-    name   = "root-device-type"
-    values = ["ebs"]
-  }
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-  filter {
-    name   = "name"
-    values = ["${var.ami_name_prefix}*"]
-  }
-}
+# data "aws_ami" "develop_ami" {
+#   owners           = ["amazon"]
+#   executable_users = ["self"]
+#   most_recent      = true
+# 
+#   filter {
+#     name   = "architecture"
+#     values = ["x86_64"] # , "arm64"
+#   }
+#   filter {
+#     name   = "root-device-type"
+#     values = ["ebs"]
+#   }
+#   filter {
+#     name   = "virtualization-type"
+#     values = ["hvm"]
+#   }
+#   filter {
+#     name   = "name"
+#     values = ["${var.ami_name_prefix}*"]
+#   }
+# }
 
 resource "aws_instance" "develop" {
-    ami           = data.aws_ami.develop_ami.id
+    # ami           = data.aws_ami.develop_ami.id
+    ami           = "${var.ami_id}"
     instance_type = "${var.instance_type}"
 
     associate_public_ip_address = true

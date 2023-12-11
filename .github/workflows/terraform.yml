@@ -16,10 +16,11 @@ env:
   TF_BUCKET_KEY              : ${{ vars.bucket_key }}
 
   TF_VAR_region              : ${{ vars.region }}
-  TF_VAR_ami_name_prefix     : ${{ vars.ami_name_prefix }}
+  TF_VAR_ami_id              : ${{ vars.ami_id }}
   TF_VAR_instance_type       : ${{ vars.instance_type }}
   TF_VAR_device_name         : ${{ vars.device_name }}
   TF_VAR_max_price           : ${{ vars.max_price }}
+  # TF_VAR_ami_name_prefix     : ${{ vars.ami_name_prefix }}
 
   TF_VAR_subnet_id           : ${{ secrets.subnet_id }}
   TF_VAR_ssh_port            : ${{ secrets.ssh_port }}

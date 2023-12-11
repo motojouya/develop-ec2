@@ -6,9 +6,10 @@ variable "security_group_name" {}
 # variable "security_group_id" {}
 
 # instance
-variable "ami_name_prefix" {}
 variable "instance_type" {}
 variable "max_price" {}
+variable "ami_id" {}
+# variable "ami_name_prefix" {}
 # variable "tags" {
 #   type        = list(string)
 # }
