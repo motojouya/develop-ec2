@@ -1,5 +1,6 @@
 # network
 variable "region" {}
+variable "availability_zone" {}
 variable "subnet_id" {}
 variable "ssh_port" {}
 variable "security_group_name" {}

@@ -27,7 +27,7 @@ resource "aws_instance" "develop" {
     instance_type = "${var.instance_type}"
 
     associate_public_ip_address = true
-    availability_zone           = "${var.region}"
+    availability_zone           = "${var.availability_zone}"
     subnet_id                   = "${var.subnet_id}"
     security_groups             = ["${var.security_group_name}"]
     # vpc_security_group_ids      = ["${var.security_group_id}"]
