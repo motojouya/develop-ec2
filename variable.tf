@@ -3,8 +3,8 @@ variable "region" {}
 variable "availability_zone" {}
 variable "subnet_id" {}
 variable "ssh_port" {}
-variable "security_group_name" {}
-# variable "security_group_id" {}
+variable "security_group_id" {}
+# variable "security_group_name" {}
 
 # instance
 variable "instance_type" {}

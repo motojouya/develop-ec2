@@ -25,7 +25,8 @@ env:
 
   TF_VAR_subnet_id           : ${{ secrets.subnet_id }}
   TF_VAR_ssh_port            : ${{ secrets.ssh_port }}
-  TF_VAR_security_group_name : ${{ secrets.security_group_name }}
+  TF_VAR_security_group_id   : ${{ secrets.security_group_id }}
+  # TF_VAR_security_group_name : ${{ secrets.security_group_name }}
   TF_VAR_volume_id           : ${{ secrets.volume_id }}
   TF_VAR_keypair_name        : ${{ secrets.keypair_name }}
   TF_VAR_profile_name        : ${{ secrets.profile_name }}
