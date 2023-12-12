@@ -23,22 +23,22 @@
 
 resource "aws_instance" "develop" {
     # ami           = data.aws_ami.develop_ami.id
-    ami           = "${var.ami_id}"
-    instance_type = "${var.instance_type}"
+    ami           = var.ami_id
+    instance_type = var.instance_type
 
     associate_public_ip_address = true
-    availability_zone           = "${var.availability_zone}"
-    subnet_id                   = "${var.subnet_id}"
+    availability_zone           = var.availability_zone
+    subnet_id                   = var.subnet_id
     # security_groups             = ["${var.security_group_name}"]
     vpc_security_group_ids      = ["${var.security_group_id}"]
 
-    key_name             = "${var.keypair_name}"
-    iam_instance_profile = "${var.profile_name}"
+    key_name             = var.keypair_name
+    iam_instance_profile = var.profile_name
 
     instance_market_options {
       market_type = "spot"
       spot_options {
-        max_price = "var.max_price"
+        max_price = var.max_price
       }
     }
 
@@ -53,7 +53,7 @@ resource "aws_instance" "develop" {
 }
 
 resource "aws_volume_attachment" "develop_ebs_attachment" {
-  device_name = "${var.device_name}"
-  volume_id   = "${var.volume_id}"
+  device_name = var.device_name
+  volume_id   = var.volume_id
   instance_id = aws_instance.develop.id
 }
