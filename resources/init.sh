@@ -54,6 +54,10 @@ sed -e s/{%port%}/$ssh_port/g sshd_config.tmpl > sshd_config.init
 cp sshd_config.init /etc/ssh/sshd_config
 systemctl restart sshd
 
+# git
+dnf install -y git
+git -v
+
 # install nodejs
 yum install https://rpm.nodesource.com/pub_20.x/nodistro/repo/nodesource-release-nodistro-1.noarch.rpm -y
 yum install nodejs -y --setopt=nodesource-nodejs.module_hotfixes=1
@@ -61,12 +65,15 @@ npm install -g npx
 npm install -g typescript typescript-language-server
 
 # install docker
-amazon-linux-extras install docker
-service docker start
-systemctl enable docker
-# usermod -a -G docker ec2-user
-usermod -a -G docker $username
+dnf install -y docker
+systemctl enable --now docker
+systemctl status docker
+usermod -aG docker $username
 docker info
+
+dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
+dnf --releasever=36 install -y docker-buildx-plugin docker-compose-plugin
+docker compose version
 # gpasswd -a $username docker
 # systemctl restart docker
 
