@@ -1,9 +1,9 @@
 name: Terraform
 
 on:
-  # schedule:
-  #   - cron:  '30 23 * * 0-4'
-  #   - cron:  '0 1 * * 1-5'
+  schedule:
+    - cron:  '30 23 * * 0-4'
+    - cron:  '0 1 * * 1-5'
   workflow_dispatch:
     inputs:
       do_apply:
