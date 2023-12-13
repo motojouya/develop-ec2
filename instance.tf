@@ -18,9 +18,9 @@ resource "aws_instance" "develop" {
     }
 
     user_data = <<EOF
-      #!/bin/bash
-      curl https://raw.githubusercontent.com/motojouya/develop-ec2/main/resources/init.sh | bash -s -- ${var.region} ${var.ssh_port} ${var.volume_id} ${var.device_name} ${var.user_name}
-    EOF
+#!/bin/bash
+curl https://raw.githubusercontent.com/motojouya/develop-ec2/main/resources/init.sh | bash -s -- ${var.region} ${var.ssh_port} ${var.volume_id} ${var.device_name} ${var.user_name}
+EOF
 
     tags = {
         Name = "develop"
