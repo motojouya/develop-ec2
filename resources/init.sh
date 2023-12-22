@@ -85,5 +85,9 @@ docker compose version
 # gpasswd -a $username docker
 # systemctl restart docker
 
+# pip
+curl -O https://bootstrap.pypa.io/get-pip.py
+python3 get-pip.py
+
 # # others
 # /home/$username/.fzf/install --bin
