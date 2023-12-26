@@ -63,6 +63,7 @@ yum install https://rpm.nodesource.com/pub_20.x/nodistro/repo/nodesource-release
 yum install nodejs -y --setopt=nodesource-nodejs.module_hotfixes=1
 npm install -g npx
 npm install -g typescript typescript-language-server
+npm install -g aws-cdk
 
 # install docker
 dnf install -y docker
