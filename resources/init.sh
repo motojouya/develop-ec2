@@ -90,5 +90,10 @@ docker compose version
 curl -O https://bootstrap.pypa.io/get-pip.py
 python3 get-pip.py
 
+# terraform
+yum install -y yum-utils
+yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
+yum -y install terraform
+
 # # others
 # /home/$username/.fzf/install --bin
