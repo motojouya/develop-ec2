@@ -13,6 +13,10 @@ variable "ami_id" {}
 #   type        = list(string)
 # }
 
+# domain
+variable "domain" {}
+variable "hosted_zone_id" {}
+
 # profiles
 variable "user_name" {}
 variable "keypair_name" {}

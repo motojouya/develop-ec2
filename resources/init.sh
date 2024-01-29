@@ -6,8 +6,10 @@ ssh_port=$2
 volume_id=$3
 device_name=$4
 username=$5
-# userid=$6
-# password=$7
+domain=$6
+hosted_zone_id=$7
+# userid=$8
+# password=$9
 
 export AWS_DEFAULT_REGION=$region
 cd /home/ec2-user
@@ -54,6 +56,24 @@ sed -e s/{%port%}/$ssh_port/g sshd_config.tmpl > sshd_config.init
 cp sshd_config.init /etc/ssh/sshd_config
 systemctl restart sshd
 
+# register route53
+ip=$(curl -s 169.254.169.254/latest/meta-data/public-ipv4)
+curl https://raw.githubusercontent.com/motojouya/develop-ec2/main/resources/dyndns.tmpl -O
+sed -e "s/{%IP%}/$ip/g;s/{%domain%}/$domain/g" dyndns.tmpl > change_resource_record_sets.json
+aws route53 change-resource-record-sets --hosted-zone-id $hosted_zone_id --change-batch file:///home/ec2-user/change_resource_record_sets.json
+
+# install nginx and certbot for let's encrypt
+cd /etc
+cp /home/$username/letsencrypt.tar.gz letsencrypt.tar.gz
+tar xzf letsencrypt.tar.gz
+cd /home/ubuntu
+
+yum install -y nginx
+curl https://raw.githubusercontent.com/motojouya/develop-ec2/main/resources/http.conf.tmpl -O
+sed -e s/{%domain%}/$domain/g http.conf.tmpl > http.conf
+cp http.conf /etc/nginx/conf.d/http.conf
+systemctl start nginx.service
+
 # git
 dnf install -y git
 git -v
@@ -87,8 +107,18 @@ docker compose version
 # systemctl restart docker
 
 # pip
-curl -O https://bootstrap.pypa.io/get-pip.py
-python3 get-pip.py
+# curl -O https://bootstrap.pypa.io/get-pip.py
+# python3 get-pip.py
+dnf install -y python3 augeas-libs pip
+python3 -m venv /opt/certbot/
+/opt/certbot/bin/pip install --upgrade pip
+/opt/certbot/bin/pip install certbot
+ln -s /opt/certbot/bin/certbot /usr/bin/certbot
+# apt install -y software-properties-common
+# add-apt-repository -y universe
+# add-apt-repository -y ppa:certbot/certbot
+# apt update
+# apt install -y certbot python-certbot-nginx
 
 # terraform
 yum install -y yum-utils
