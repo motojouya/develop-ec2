@@ -13,7 +13,8 @@ hosted_zone_id=$7
 
 export AWS_DEFAULT_REGION=$region
 cd /home/ec2-user
-instance_id=$(curl -s 169.254.169.254/latest/meta-data/instance-id)
+ip=$(ec2-metadata -v | awk '{print $2}')
+# instance_id=$(curl -s 169.254.169.254/latest/meta-data/instance-id)
 
 # install commands
 yum update -y
@@ -57,7 +58,6 @@ cp sshd_config.init /etc/ssh/sshd_config
 systemctl restart sshd
 
 # register route53
-ip=$(curl -s 169.254.169.254/latest/meta-data/public-ipv4)
 curl https://raw.githubusercontent.com/motojouya/develop-ec2/main/resources/dyndns.tmpl -O
 sed -e "s/{%IP%}/$ip/g;s/{%domain%}/$domain/g" dyndns.tmpl > change_resource_record_sets.json
 aws route53 change-resource-record-sets --hosted-zone-id $hosted_zone_id --change-batch file:///home/ec2-user/change_resource_record_sets.json
@@ -65,8 +65,8 @@ aws route53 change-resource-record-sets --hosted-zone-id $hosted_zone_id --chang
 # install nginx and certbot for let's encrypt
 cd /etc
 cp /home/$username/letsencrypt.tar.gz letsencrypt.tar.gz
-tar xzf letsencrypt.tar.gz
-cd /home/ubuntu
+tar -xzf letsencrypt.tar.gz
+cd /home/ec2-user
 
 yum install -y nginx
 curl https://raw.githubusercontent.com/motojouya/develop-ec2/main/resources/http.conf.tmpl -O
