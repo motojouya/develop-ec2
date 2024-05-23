@@ -23,6 +23,7 @@ yum install -y jq
 yum install -y tmux
 yum install -y tree
 yum install -y xauth
+yum install -y sqlite
 yum install -y silversearcher-ag
 
 # mount ebs volume
